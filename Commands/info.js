@@ -20,7 +20,7 @@ exports.run = async(client, message, args) => {
         CPU Usage: ${percents.toFixed(2)} %
         Node.js Version: ${process.version}
         `), true)
-        .addField('Bot Github (Open Source): ', "[Source](https://github.com)")
+        .addField('Bot Github (Open Source): ', "[Source](https://github.com/SadesXD/GTPS-Auto-Backup-Discord-Bot)")
         .setTimestamp()
         return message.channel.send(embed);
     })
