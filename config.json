@@ -1,0 +1,10 @@
+{
+  "prefix": "",
+  "token": "",
+  "secret_channels": "",
+  "role_id": "",
+  "delay": "",
+  "world_folder": "Path/to/world_folder",
+  "player_folder": "Path/to/player_folder",
+  "gtps_folder": "Path/to/gtps_folder"
+}
