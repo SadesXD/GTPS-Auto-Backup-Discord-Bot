@@ -2,13 +2,14 @@ const Discord = require("discord.js");
 const config = require("../config.json");
 const moment = require("moment");
 const { stripIndent } = require("common-tags");
-const { timestamp } = require("../Data/Data.json");
+const Data = require("../Data/Data.json");
 const Backup = new (require("../main"))(new Discord.Client(), {
   config: config,
   discord: Discord,
 });
 
 exports.run = async (client, message, args) => {
+  let get_data = Data.times || Data.time;
   const embed = new Discord.MessageEmbed()
     .setAuthor("Server Statistic")
     .setColor("RANDOM")
@@ -24,7 +25,7 @@ exports.run = async (client, message, args) => {
     `}\`\`\``
     )
     .setFooter(
-      `Last Backup: ${moment.utc(timestamp).format("lll")} ( UTC-Time )`
+      `Last Backup: ${moment.utc(get_data).format("lll")} ( UTC-Time )`
     );
   return message.channel.send(embed);
 };
