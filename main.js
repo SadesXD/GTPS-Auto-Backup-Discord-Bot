@@ -69,7 +69,7 @@ class Backup {
 
     files.forEach((file) => {
       if (fs.statSync(dir + "/" + file).isDirectory()) {
-        arrayFiles = getAllFiles(dir + "/" + file, arrayFiles);
+        arrayFiles = this.get_all_files(dir + "/" + file, arrayFiles);
       } else {
         arrayFiles.push(path.join(__dirname, dir, file));
       }
