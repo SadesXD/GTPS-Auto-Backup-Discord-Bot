@@ -53,7 +53,7 @@ This project will help you to backup your gtps server using discord bot and with
 - Don't delete `Data` folder and `all files` in `Data`
   folder
 - You can delete `Assets` folder if you don't need that
-- Report to [https://github.com/SadesXD/GTPS-Auto-Backup-Discord-Bot](https://github.com/SadesXD/GTPS-Auto-Backup-Discord-Bot) or [Our Discord Server](https://discord.gg/8rUvTYhFqK) if you found some bug
+- Report to [https://github.com/SadesXD/GTPS-Auto-Backup-Discord-Bot/issues](https://github.com/SadesXD/GTPS-Auto-Backup-Discord-Bot/issues) or [Our Discord Server](https://discord.gg/8rUvTYhFqK) if you found some bug
 
 ## Credit
 
