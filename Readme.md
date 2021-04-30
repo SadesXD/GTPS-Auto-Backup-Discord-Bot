@@ -34,7 +34,7 @@ This project will help you to backup your gtps server using discord bot and with
   - "h" for hours, example usage: "1h" -> 1 hour
   - "d" for days, example usage: "1d" -> 1 day
 
-```json
+```
 {
   "prefix": "", // Your bot prefix command
   "token": "", // Your bot token
