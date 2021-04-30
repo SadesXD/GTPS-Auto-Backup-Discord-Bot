@@ -17,7 +17,7 @@ This project will help you to backup your gtps server using discord bot and with
 ## How to use
 
 - Go to your vps and install this project
-- Install Node.js: 
+- Install Node.js: [https://nodejs.org/en/download/](https://nodejs.org/en/download/)
 - Put the app near of your gtps folder
 - Setting app in [config.json](#Config) file
 - Go to `Setup` folder and click `install.bat` file for install the required package
