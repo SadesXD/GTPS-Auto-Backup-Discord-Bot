@@ -10,6 +10,7 @@ This project will help you to backup your gtps server using discord bot and with
 - cpu-stat
 - discord.js
 - fs
+- ms
 - moment
 - path
 - zip-folder
