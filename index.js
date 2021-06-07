@@ -19,7 +19,7 @@ const reply_backup = require("./Commands/backup");
 
 client.on("ready", async () => {
   
-  client.user.setActivity(`GTPS Auto Backup | ${prefix}help`, {
+  client.user.setActivity(`GTPS Auto Backup | ${prefix}help | By SadesXD#3971`, {
     type:"WATCHING"
   });
   
