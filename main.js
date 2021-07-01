@@ -71,7 +71,7 @@ class Backup {
       if (fs.statSync(dir + "/" + file).isDirectory()) {
         arrayFiles = this.get_all_files(dir + "/" + file, arrayFiles);
       } else {
-        arrayFiles.push(path.join(__dirname, dir, file));
+        arrayFiles.push(path.join(dir, file));
       }
     });
 
