@@ -3,6 +3,7 @@ const zip = require("zip-folder");
 const path = require("path");
 const ms = require("ms");
 const { stripIndent } = require("common-tags");
+const { MessageEmbed } = require("discord.js");
 
 class Backup {
   constructor(client, options) {
@@ -19,9 +20,9 @@ class Backup {
   }
 
   save_data(Timestamp) {
-    let Data = JSON.parse(fs.readFileSync('./Data/Data.json'));
+    let Data = JSON.parse(fs.readFileSync("./Data/Data.json"));
     Data.time = Timestamp;
-    fs.writeFileSync('./Data/Data.json', JSON.stringify(Data, null, 2));
+    fs.writeFileSync("./Data/Data.json", JSON.stringify(Data, null, 2));
 
     let data = require("./Data/Data.json");
     data.times = Timestamp;
@@ -29,36 +30,34 @@ class Backup {
 
   send_backup() {
     setInterval(() => {
+      let desc = stripIndent(`
+      World Created Count: ${this.get_all_files(this.options.config.world_folder).length}
+      World Size: ${this.get_total_size(this.options.config.world_folder)}
+      Player Registered Count: ${this.get_all_files(this.options.config.player_folder).length}
+      Player Size: ${this.get_total_size(this.options.config.player_folder)}
+      `);
+
+      const embed = new MessageEmbed()
+        .setColor("RANDOM")
+        .addField("Server Stats", "```" + desc + "```", true)
+        .setTimestamp();
+
       this.save_data(Date.now());
       this.backup_file();
-      this.client.channels.cache.get(this.options.config.secret_channels).send(`\`\`\`Backup loaded\`\`\``,
-        {
-          embed: {
-            color: "RANDOM",
-            fields: [
-              {
-                name: "Server stats",
-                value: `\`\`\`${stripIndent`
-                World Created Count: ${this.get_all_files(this.options.config.world_folder).length}
-                World Size: ${this.get_total_size(this.options.config.world_folder)}
-                Player Registered Count: ${this.get_all_files(this.options.config.player_folder).length}
-                Player Size: ${this.get_total_size(this.options.config.player_folder)}
-                `}\`\`\``,
-                inline: true,
-              },
-            ]
-          },
+      setTimeout(() => {
+        this.client.channels.cache.get(this.options.config.secret_channels).send({
+          embed,
           files: [
             {
               attachment: "./GTPS_Backup.zip",
               name: "Backup-result.zip",
             },
           ],
-        }
-      );
+        });
+      }, 60000);
     }, ms(this.options.config.delay));
   }
-  
+
   /**
    * source: https://coderrocketfuel.com/article/get-the-total-size-of-all-files-in-a-directory-using-node-js
    */
