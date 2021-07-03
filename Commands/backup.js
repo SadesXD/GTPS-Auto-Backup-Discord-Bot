@@ -49,15 +49,19 @@ exports.run = async (client, message, args) => {
 
         message.channel.send("Please wait...");
         embed.setDescription("```" + dsc + "```");
-        message.author.send({
-          embed,
-          files: [
-            {
-              attachment: "./GTPS_Backup.zip",
-              name: "Backup-result.zip",
-            },
-          ],
-        });
+        message.author
+          .send({
+            embed,
+            files: [
+              {
+                attachment: "./GTPS_Backup.zip",
+                name: "Backup-result.zip",
+              },
+            ],
+          })
+          .then((am) => {
+            msg.channel.send("Check your dm !");
+          });
         correctCollect.stop();
       })
       .on("end", async (x) => {
