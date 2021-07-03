@@ -15,6 +15,7 @@ const backup = new Backup(client, {
   config: require("./config.json"),
   discord: Discord,
 });
+backup.check_delay();
 
 client.on("ready", async () => {
   client.user.setActivity(`GTPS Auto Backup | ${prefix}help | By SadesXD#3971`, {
