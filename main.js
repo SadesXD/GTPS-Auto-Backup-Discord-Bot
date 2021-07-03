@@ -11,6 +11,12 @@ class Backup {
     this.options = options;
   }
 
+  check_delay() {
+    if (ms(this.options.config.delay) < ms("2m")) {
+      throw new Error("Min for delay in your config is 2m");
+    }
+  }
+
   backup_file() {
     zip(this.options.config.gtps_folder, "GTPS_Backup.zip", (err) => {
       if (err) {
