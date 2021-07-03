@@ -21,6 +21,8 @@ exports.run = async (client, message, args) => {
     .setAuthor("Server Statistic")
     .setColor("RANDOM")
     .addField("Stats: ", `\`\`\`${dsc}\`\`\``)
-    .setFooter(`Last Backup: ${moment.utc(get_data).format("lll")} ( UTC-Time )`);
+    .setFooter(
+      `Last Backup: ${get_data ? moment.utc(get_data).format("lll") + " ( UTC-Time )" : "None"}`
+    );
   return message.channel.send(embed);
 };
