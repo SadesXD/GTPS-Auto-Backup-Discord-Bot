@@ -59,3 +59,10 @@ This project will help you to backup your gtps server using discord bot and with
 
 - Project inspired by: [GTPSControllerDiscordBot](https://github.com/GuckTubeYT/GTPSControllerDiscordBot)
 - Some code: [Here](https://coderrocketfuel.com/article/get-the-total-size-of-all-files-in-a-directory-using-node-js)
+
+## Updated
+
+<h3><b>3 - July - 2021</b></h3>
+
+- Fixed backup zip file is not fully send
+- make some code more shortly/simple
