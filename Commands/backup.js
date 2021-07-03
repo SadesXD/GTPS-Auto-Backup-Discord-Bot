@@ -43,11 +43,11 @@ exports.run = async (client, message, args) => {
           Player Created Count: ${Backup.get_all_files(config.player_folder).length}
           Player Size: ${Backup.get_total_size(config.player_folder)}
         `);
-        message.channel.send("Please wait...");
       
         Backup.backup_file();
         Backup.save_data(Date.now());
 
+        message.channel.send("Please wait...");
         embed.setDescription("```" + dsc + "```");
         message.author
           .send({
