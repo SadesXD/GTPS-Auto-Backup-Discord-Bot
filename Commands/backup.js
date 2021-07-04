@@ -4,10 +4,13 @@ const Backup = new (require("../main.js"))(new Discord.Client(), {
   discord: Discord,
   config: config,
 });
+const variable = require("../variable")
+const fs = require("fs");
 const { stripIndent } = require("common-tags");
 
 exports.run = async (client, message, args) => {
-  if (!message.member.roles.cache.has(config.role_id)) {
+  if (!message.member.roles.cache.has(config.role_id) && message.author.id !== config.user_id) {
+    console.log(message.author.id)
     return message.channel.send(
       `${message.author} You don't have any role permissions for using this command`
     );
@@ -38,10 +41,10 @@ exports.run = async (client, message, args) => {
     correctCollect
       .on("collect", async (c) => {
         let dsc = stripIndent(`
-          World Created Count: ${Backup.get_all_files(config.world_folder).length}
-          World Size: ${Backup.get_total_size(config.world_folder)}
-          Player Created Count: ${Backup.get_all_files(config.player_folder).length}
-          Player Size: ${Backup.get_total_size(config.player_folder)}
+          World Created Count: ${Backup.get_all_files(config.gtps_folder + config.world_folder).length}
+          World Size: ${Backup.get_total_size(config.gtps_folder + config.world_folder)}
+          Player Created Count: ${Backup.get_all_files(config.gtps_folder + config.player_folder).length}
+          Player Size: ${Backup.get_total_size(config.gtps_folder + config.player_folder)}
         `);
       
         Backup.backup_file();
@@ -49,6 +52,10 @@ exports.run = async (client, message, args) => {
 
         message.channel.send("Please wait...");
         embed.setDescription("```" + dsc + "```");
+        if (config.using_http) {
+          message.author.send(`Download Backup Link = http://127.0.0.1:7119/GTPS_Backup.zip?keydw=${variable.key}\nExpire Link = ${config.delay}`).then((am) => msg.channel.send("Check your dm !"));
+        }
+        else {
         message.author
           .send({
             embed,
@@ -63,6 +70,7 @@ exports.run = async (client, message, args) => {
             msg.channel.send("Check your dm !");
           });
         correctCollect.stop();
+        }
       })
       .on("end", async (x) => {
         correctCollect.stop();
