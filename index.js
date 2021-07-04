@@ -4,25 +4,43 @@
  */
 
 const Discord = require("discord.js");
+const fs = require("fs")
+const http = require("http");
+const variable = require("./variable")
 const client = new Discord.Client({
   restRequestTimeout: 120000,
 });
-const { prefix, token } = require("./config.json");
+const { prefix, token, using_http } = require("./config.json");
 const { existsSync } = require("fs");
 
 const Backup = require("./main");
+const { config } = require("process");
 const backup = new Backup(client, {
   config: require("./config.json"),
   discord: Discord,
 });
+backup.check_requirement();
 backup.check_delay();
+
+const httpServer = http.createServer(function (req, res) {
+  if (req.url === "/GTPS_Backup.zip?keydw=" + variable.key)
+  {
+      const fread = fs.readFileSync("GTPS_Backup.zip", "binary")
+      res.writeHead(200, {"Content-Type": "application/zip"});
+      res.write(fread, "binary");
+      return res.end();
+  }
+  res.writeHead(401, "Auth Key Need");
+  res.write("Authentication Key Need");
+  return res.end();
+})
 
 client.on("ready", async () => {
   client.user.setActivity(`GTPS Auto Backup | ${prefix}help | By SadesXD#3971`, {
     type: "WATCHING",
   });
 
-  console.log(`${client.user.tag} is ready now`);
+  backup.infoLog(`${client.user.tag} is ready now`);
   backup.send_backup();
 });
 
@@ -46,3 +64,9 @@ client.on("message", async (message) => {
 });
 
 client.login(token);
+
+if (using_http)
+{
+  variable.key = fs.readFileSync("backupdw.key", "utf8")
+  httpServer.listen(7119)
+}
