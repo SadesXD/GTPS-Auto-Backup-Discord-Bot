@@ -41,10 +41,12 @@ This project will help you to backup your gtps server using discord bot and with
   "token": "", // Your bot token
   "secret_channels": "", // Discord Channels id, Backup file will auto send into this channel
   "role_id": "", // role id (Discord server role) will you allow for using backup command (Owner role id is recomended)
+  "user_id": "", User ID will you allow for using backup command (Optional, You can Empty it)
   "delay": "", // Delay every backup, Backup file will auto send every (this delay config), example usage: "1s", "1m", "1h","1d"
   "world_folder": "Path/to/world_folder/", // Path into your world folder
   "player_folder": "Path/to/player_folder", // Path into your player folder
-  "gtps_folder": "Path/to/gtps_folder" // // Path into your gtps folder
+  "gtps_folder": "Path/to/gtps_folder" // Path into your gtps folder
+  "using_http": true // Backup using HTTP
 }
 ```
 
