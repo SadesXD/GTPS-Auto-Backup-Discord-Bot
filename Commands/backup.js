@@ -53,7 +53,7 @@ exports.run = async (client, message, args) => {
         message.channel.send("Please wait...");
         embed.setDescription("```" + dsc + "```");
         if (config.using_http) {
-          message.author.send(`Download Backup Link = http://127.0.0.1:7119/GTPS_Backup.zip?keydw=${variable.key}\nExpire Link = ${config.delay}`).then((am) => msg.channel.send("Check your dm !"));
+          message.author.send(`Download Backup Link = http://${variable.ip}:7119/GTPS_Backup.zip?keydw=${variable.key}\nExpire Link = ${config.delay}`).then((am) => msg.channel.send("Check your dm !"));
         }
         else {
         message.author
