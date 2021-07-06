@@ -67,6 +67,13 @@ client.login(token);
 
 if (using_http)
 {
-  variable.key = fs.readFileSync("backupdw.key", "utf8")
+  //Source = https://gist.github.com/sviatco/9054346
+  var address, ifaces = require('os').networkInterfaces();
+  for (var dev in ifaces) {
+    ifaces[dev].filter((details) => details.family === 'IPv4' && details.internal === false ? address = details.address: undefined);
+  }
+
+  variable.key = backup.getRandomString(30)
   httpServer.listen(7119)
+  variable.ip = address
 }
