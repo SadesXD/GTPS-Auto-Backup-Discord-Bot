@@ -2,7 +2,7 @@ const fs = require("fs");
 const zip = require("zip-folder");
 const path = require("path");
 const ms = require("ms");
-const config = require("./config.json")
+var config = require("./config.json")
 const { stripIndent } = require("common-tags");
 const { MessageEmbed } = require("discord.js");
 const variable = require("./variable")
@@ -22,6 +22,10 @@ class Backup {
   infoLog(text)
   {
     console.log("[INFO] " + text)
+  }
+  warningLog(text)
+  {
+    console.log("[WARNING] " + text)
   }
   check_requirement() {
     this.infoLog("Checking Folder...")
@@ -43,14 +47,6 @@ class Backup {
     if (isNaN(config.role_id)) throw new Error("Role ID must be Number")
     if (isNaN(config.user_id)) throw new Error("User ID must be Number")
     if (!config.delay) throw new Error("Please set the Delay at config.json")
-    if (config.using_http) {
-      this.infoLog("Backup Using HTTP")
-      if (!fs.existsSync("backupdw.key"))
-      {
-        fs.writeFileSync("backupdw.key", Buffer.from(this.getRandomString(30)).toString('base64'))
-      }
-    }
-
     this.infoLog("Config has been checked")
   }
   check_delay() {
@@ -95,8 +91,7 @@ class Backup {
         if (config.using_http)
         {
           variable.key = this.getRandomString(30)
-          fs.writeFileSync("backupdw.key", variable.key)
-          this.client.channels.cache.get(this.options.config.secret_channels).send(`Download Backup Link = http://127.0.0.1:7119/GTPS_Backup.zip?keydw=${variable.key}\nExpire Link = ${config.delay}`);
+          this.client.channels.cache.get(this.options.config.secret_channels).send(`Download Backup Link = http://${variable.ip}:7119/GTPS_Backup.zip?keydw=${variable.key}\nExpire Link = ${config.delay}`);
         }
         else {
         this.client.channels.cache.get(this.options.config.secret_channels).send({
