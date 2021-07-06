@@ -2,21 +2,58 @@ const fs = require("fs");
 const zip = require("zip-folder");
 const path = require("path");
 const ms = require("ms");
+var config = require("./config.json")
 const { stripIndent } = require("common-tags");
 const { MessageEmbed } = require("discord.js");
-
+const variable = require("./variable")
 class Backup {
   constructor(client, options) {
     this.client = client;
     this.options = options;
   }
-
+  getRandomString(length) {
+    var randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var result = '';
+    for ( var i = 0; i < length; i++ ) {
+        result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
+    }
+    return result;
+  }
+  infoLog(text)
+  {
+    console.log("[INFO] " + text)
+  }
+  warningLog(text)
+  {
+    console.log("[WARNING] " + text)
+  }
+  check_requirement() {
+    this.infoLog("Checking Folder...")
+    if (!config.gtps_folder.slice(-1).includes("/")) config.gtps_folder += "/"
+    if (config.world_folder.slice(-1).includes("/")) config.world_folder = config.world_folder.slice(0, -1);
+    if (config.player_folder.slice(-1).includes("/")) config.player_folder = config.player_folder.slice(0, -1);
+    if (config.gtps_folder.length == 1) config.gtps_folder = ""
+    if (!fs.existsSync(config.gtps_folder + config.player_folder)) throw new Error("Players folder not found, Please set config.json correctly")
+    this.infoLog("Players Folder Found!")
+    if (!fs.existsSync(config.gtps_folder + config.world_folder)) throw new Error ("Worlds folder not found, please set config.json correctly")
+    this.infoLog("Worlds folder Found!")
+    this.infoLog("Folder has been checked")
+    this.infoLog("Checking Config...")
+    if (!config.prefix) throw new Error("Please set the prefix at config.json")
+    if (!config.token) throw new Error("Please set the token at config.json")
+    if (!config.secret_channels) throw new Error("Please set the Secret channel ID at config.json")
+    if (isNaN(config.secret_channels)) throw new Error("Secret Channel ID must be Number")
+    if (!config.role_id && !config.user_id) throw new Error("Please set Role ID or User ID at config.json")
+    if (isNaN(config.role_id)) throw new Error("Role ID must be Number")
+    if (isNaN(config.user_id)) throw new Error("User ID must be Number")
+    if (!config.delay) throw new Error("Please set the Delay at config.json")
+    this.infoLog("Config has been checked")
+  }
   check_delay() {
     if (ms(this.options.config.delay) < ms("2m")) {
       throw new Error("Min for delay in your config is 2m");
     }
   }
-
   backup_file() {
     zip(this.options.config.gtps_folder, "GTPS_Backup.zip", (err) => {
       if (err) {
@@ -37,10 +74,10 @@ class Backup {
   send_backup() {
     setInterval(() => {
       let desc = stripIndent(`
-      World Created Count: ${this.get_all_files(this.options.config.world_folder).length}
-      World Size: ${this.get_total_size(this.options.config.world_folder)}
-      Player Registered Count: ${this.get_all_files(this.options.config.player_folder).length}
-      Player Size: ${this.get_total_size(this.options.config.player_folder)}
+      World Created Count: ${this.get_all_files(this.options.config.gtps_folder + this.options.config.world_folder).length}
+      World Size: ${this.get_total_size(this.options.config.gtps_folder + this.options.config.world_folder)}
+      Player Registered Count: ${this.get_all_files(this.options.config.gtps_folder + this.options.config.player_folder).length}
+      Player Size: ${this.get_total_size(this.options.config.gtps_folder + this.options.config.player_folder)}
       `);
 
       const embed = new MessageEmbed()
@@ -51,6 +88,12 @@ class Backup {
       this.save_data(Date.now());
       this.backup_file();
       setTimeout(() => {
+        if (config.using_http)
+        {
+          variable.key = this.getRandomString(30)
+          this.client.channels.cache.get(this.options.config.secret_channels).send(`Download Backup Link = http://${variable.ip}:7119/GTPS_Backup.zip?keydw=${variable.key}\nExpire Link = ${config.delay}`);
+        }
+        else {
         this.client.channels.cache.get(this.options.config.secret_channels).send({
           embed,
           files: [
@@ -60,6 +103,7 @@ class Backup {
             },
           ],
         });
+      }
       }, 60000);
     }, ms(this.options.config.delay));
   }
