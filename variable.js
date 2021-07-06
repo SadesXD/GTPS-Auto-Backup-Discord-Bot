@@ -1,5 +1,7 @@
 var key;
+var ip;
 
 module.exports = {
-    key: key
+    key: key,
+    ip: ip
 }
