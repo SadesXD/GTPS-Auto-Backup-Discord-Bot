@@ -33,7 +33,7 @@ class Backup {
     else if (!fs.existsSync(config.player_folder)) throw new Error("Player folder is not found !");
     this.infoLog("Folder has been checked !");
     this.infoLog("Checking config !");
-    let ListData = Object.keys(config);
+    let ListData = Object.keys(config).filter(fil => fil !== "user_id");
     for(let List of ListData) {
       if (!config[List]) throw new Error(`Please set "${List}" at config.json file !`)
     }
