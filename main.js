@@ -90,6 +90,8 @@ class Backup {
 
       this.save_data(Date.now());
       this.backup_file();
+      
+      // Give a cooldown/timeout for give more time to bot for zip a folder ( IMPORTANT ! )
       setTimeout(() => {
         if (this.check_using_http()) {
           data.key = this.getRandomString(30);
