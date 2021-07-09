@@ -3,10 +3,8 @@
   "token": "",
   "secret_channels": "",
   "role_id": "",
-  "user_id": "",
   "delay": "",
   "world_folder": "Path/to/world_folder",
   "player_folder": "Path/to/player_folder",
   "gtps_folder": "Path/to/gtps_folder",
-  "using_http": true
 }
