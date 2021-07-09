@@ -49,6 +49,7 @@ exports.run = async (client, message, args) => {
         embed.addField("Server Stats: ", "```" + dsc + "```", false);
         msg.channel.send("Trying to send a file, this process will take a few seconds !");
 
+      // Give a cooldown/timeout for give more time to bot for zip a folder ( IMPORTANT ! )
         setTimeout(() => {
           if (Backup.check_using_http()) {
             let key = Backup.getRandomString(30);
