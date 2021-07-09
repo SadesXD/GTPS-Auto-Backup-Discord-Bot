@@ -4,28 +4,21 @@ const Backup = new (require("../main.js"))(new Discord.Client(), {
   discord: Discord,
   config: config,
 });
-const variable = require("../variable")
-const fs = require("fs");
 const { stripIndent } = require("common-tags");
+const data = require("../Data/Data.json");
+const { http } = require("../index.js");
 
 exports.run = async (client, message, args) => {
-  if (!message.member.roles.cache.has(config.role_id) && message.author.id !== config.user_id) {
-    console.log(message.author.id)
+  if (!message.member.roles.cache.has(config.role_id)) {
     return message.channel.send(
       `${message.author} You don't have any role permissions for using this command`
     );
   }
 
-  let desc = stripIndent(`
-  Are you sure want to backup on this channel?
-  ---
-  You must be sure that you will back up the server on this channel | be careful of other people who will take your files
-  `);
-
   const embed = new Discord.MessageEmbed()
     .setAuthor(message.author.tag, message.author.displayAvatarURL())
     .setColor("RANDOM")
-    .setDescription("```" + desc + "```")
+    .setDescription("```Are you sure want to backup your server?```")
     .setTimestamp();
 
   message.channel.send(embed).then((msg) => {
@@ -40,37 +33,61 @@ exports.run = async (client, message, args) => {
 
     correctCollect
       .on("collect", async (c) => {
-        let dsc = stripIndent(`
-          World Created Count: ${Backup.get_all_files(config.gtps_folder + config.world_folder).length}
-          World Size: ${Backup.get_total_size(config.gtps_folder + config.world_folder)}
-          Player Created Count: ${Backup.get_all_files(config.gtps_folder + config.player_folder).length}
-          Player Size: ${Backup.get_total_size(config.gtps_folder + config.player_folder)}
-        `);
-      
+        msg.channel.send("Please wait... !");
+
         Backup.backup_file();
         Backup.save_data(Date.now());
 
-        message.channel.send("Please wait...");
-        embed.setDescription("```" + dsc + "```");
-        if (config.using_http) {
-          message.author.send(`Download Backup Link = http://${variable.ip}:7119/GTPS_Backup.zip?keydw=${variable.key}\nExpire Link = ${config.delay}`).then((am) => msg.channel.send("Check your dm !"));
-        }
-        else {
-        message.author
-          .send({
-            embed,
-            files: [
-              {
-                attachment: "./GTPS_Backup.zip",
-                name: "Backup-result.zip",
-              },
-            ],
-          })
-          .then((am) => {
-            msg.channel.send("Check your dm !");
-          });
-        correctCollect.stop();
-        }
+        let dsc = stripIndent(`
+          World Created Count: ${Backup.get_all_files(config.world_folder).length}
+          World Size: ${Backup.get_total_size(config.world_folder)}
+          Player Created Count: ${Backup.get_all_files(config.player_folder).length}
+          Player Size: ${Backup.get_total_size(config.player_folder)}
+        `);
+
+        embed.setDescription("");
+        embed.addField("Server Stats: ", "```" + dsc + "```", false);
+        msg.channel.send("Trying to send a file, this process will take a few seconds !");
+
+        setTimeout(() => {
+          if (Backup.check_using_http()) {
+            let key = Backup.getRandomString(30);
+            data.key = key;
+            http.listening ? null : http.listen(7119);
+
+            embed.addField(
+              "Backup Link",
+              `[Download Link](http://${data.ip}:7119/GTPS_Backup.zip?keydw=${data.key})`,
+              true
+            );
+            embed.addField("Expire Time: ", "```" + config.delay + "```", true);
+
+            message.author
+              .send(embed)
+              .then((am) => message.channel.send("Check your dm !"))
+              .catch((err) => {
+                return message.channel.send("Looks like you closed your dm :(");
+              });
+          } else {
+            if (http.listening) http.close();
+
+            message.author
+              .send({
+                embed,
+                files: [
+                  {
+                    attachment: "./GTPS_Backup.zip",
+                    name: "Backup-result.zip",
+                  },
+                ],
+              })
+              .then((am) => {
+                msg.channel.send("Check your dm !");
+              });
+
+            correctCollect.stop();
+          }
+        }, 30000);
       })
       .on("end", async (x) => {
         correctCollect.stop();
