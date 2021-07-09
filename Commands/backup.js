@@ -9,10 +9,10 @@ const data = require("../Data/Data.json");
 const { http } = require("../index.js");
 
 exports.run = async (client, message, args) => {
-  if (!message.member.roles.cache.has(config.role_id)) {
-    return message.channel.send(
-      `${message.author} You don't have any role permissions for using this command`
-    );
+  if (config.user_id && message.author.id !== config.user_id) {
+    return message.channel.send("You're not be able for using this command !")
+  } else if (!config.user_id && !message.member.roles.cache.has(config.role_id)) {
+    return message.channel.send(`${message.author} You don't have any role permissions for using this command`);
   }
 
   const embed = new Discord.MessageEmbed()
@@ -49,7 +49,6 @@ exports.run = async (client, message, args) => {
         embed.addField("Server Stats: ", "```" + dsc + "```", false);
         msg.channel.send("Trying to send a file, this process will take a few seconds !");
 
-      // Give a cooldown/timeout for give more time to bot for zip a folder ( IMPORTANT ! )
         setTimeout(() => {
           if (Backup.check_using_http()) {
             let key = Backup.getRandomString(30);
