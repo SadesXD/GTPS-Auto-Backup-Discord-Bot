@@ -41,7 +41,7 @@ class Backup {
     for(let mn of MustNumber) {
       if (isNaN(config[mn])) throw new Error(`"${mn}" must be a number`)
     }
-    if (ms(config.delay) > ms("2m")) throw new Error("Min for delay in your \"config.json\" file is 2m");
+    if (ms(config.delay) < ms("2m")) throw new Error("Min for delay in your \"config.json\" file is 2m");
     this.infoLog("All requirement has been checked !");
   }
 
