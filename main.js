@@ -1,7 +1,6 @@
 const fs = require("fs");
 const zip = require("zip-folder");
 const path = require("path");
-const ms = require("ms");
 const { stripIndent } = require("common-tags");
 const { MessageEmbed } = require("discord.js");
 const data = require("./Data/Data.json");
@@ -27,21 +26,26 @@ class Backup {
 
   check_requirement() {
     const config = this.options.config;
+    if (config.gtps_folder.includes("\\")) config.gtps_folder = config.gtps_folder.replace(/\\/g, "/")
+    if (config.world_folder.includes("\\")) config.world_folder = config.world_folder.replace(/\\/g, "/")
+    if (config.player_folder.includes("\\")) config.player_folder = config.player_folder.replace(/\\/g, "/")
+    if (!config.gtps_folder.slice(-1).includes("/")) config.gtps_folder += "/"
+    if (config.world_folder.slice(-1).includes("/")) config.world_folder = config.world_folder.slice(0, -1);
+    if (config.player_folder.slice(-1).includes("/")) config.player_folder = config.player_folder.slice(0, -1);
+    if (config.gtps_folder.length == 1) config.gtps_folder = ""
+    if (config.player_folder.includes(config.gtps_folder)) config.player_folder = config.player_folder.replace(config.gtps_folder, "")
+    if (config.world_folder.includes(config.gtps_folder)) config.world_folder = config.world_folder.replace(config.gtps_folder, "")
     this.infoLog("Checking folder");
-    if (!fs.existsSync(config.gtps_folder)) throw new Error("GTPS folder is not found !")
-    else if (!fs.existsSync(config.world_folder)) throw new Error("World folder is not found !");
-    else if (!fs.existsSync(config.player_folder)) throw new Error("Player folder is not found !");
+    if (!fs.existsSync(config.gtps_folder + config.world_folder)) throw new Error("World folder is not found !");
+    if (!fs.existsSync(config.gtps_folder + config.player_folder)) throw new Error("Player folder is not found !");
     this.infoLog("Folder has been checked !");
     this.infoLog("Checking config !");
-    let ListData = Object.keys(config).filter(fil => fil !== "user_id");
-    for(let List of ListData) {
-      if (!config[List]) throw new Error(`Please set "${List}" at config.json file !`)
-    }
-    let MustNumber = ["secret_channels", "role_id"];
+    if (!config.secret_channels) throw new Error("Please set the Secret channel ID at config.json")
+    if (!config.role_id && !config.user_id) throw new Error("Please set Role ID or User ID at config.json")
+    let MustNumber = ["secret_channels", "role_id", "user_id"];
     for(let mn of MustNumber) {
       if (isNaN(config[mn])) throw new Error(`"${mn}" must be a number`)
     }
-    if (ms(config.delay) < ms("2m")) throw new Error("Min for delay in your \"config.json\" file is 2m");
     this.infoLog("All requirement has been checked !");
   }
 
@@ -57,49 +61,36 @@ class Backup {
     return this.options.config.using_http;
   }
 
-  backup_file() {
-    zip(this.options.config.gtps_folder, "GTPS_Backup.zip", (err) => {
-      if (err) {
-        console.log(err);
-      }
-    });
-  }
-
   save_data(Timestamp) {
     let Data = JSON.parse(fs.readFileSync("./Data/Data.json"));
     Data.time = Timestamp;
     fs.writeFileSync("./Data/Data.json", JSON.stringify(Data, null, 2));
-
     let data = require("./Data/Data.json");
     data.times = Timestamp;
   }
 
   send_backup(http = null) {
-    setInterval(() => {
       let desc = stripIndent(`
-      World Created Count: ${this.get_all_files(this.options.config.world_folder).length}
-      World Size: ${this.get_total_size(this.options.config.world_folder)}
-      Player Registered Count: ${this.get_all_files(this.options.config.player_folder).length}
-      Player Size: ${this.get_total_size(this.options.config.player_folder)}
+      World Created Count: ${this.get_all_files(this.options.config.gtps_folder + this.options.config.world_folder).length}
+      World Size: ${this.get_total_size(this.options.config.gtps_folder + this.options.config.world_folder)}
+      Player Registered Count: ${this.get_all_files(this.options.config.gtps_folder + this.options.config.player_folder).length}
+      Player Size: ${this.get_total_size(this.options.config.gtps_folder + this.options.config.player_folder)}
       `);
 
       const embed = new MessageEmbed()
         .setColor("RANDOM")
         .addField("Server Stats", "```" + desc + "```", false)
         .setTimestamp();
-
       this.save_data(Date.now());
-      this.backup_file();
-      
-      // Give a cooldown/timeout for give more time to bot for zip a folder ( IMPORTANT ! )
-      setTimeout(() => {
+      zip(this.options.config.gtps_folder, "GTPS_Backup.zip", (err) => {
+        if (err) console.log(err)
         if (this.check_using_http()) {
           data.key = this.getRandomString(30);
           http.listening ? null : http.listen(7119);
-          
+            
           embed.addField("Backup Link", `[Download Link](http://${data.ip}:7119/GTPS_Backup.zip?keydw=${data.key})`, true)
           embed.addField("Expire Time: ", "```" + this.options.config.delay + "```", true)
-
+  
           return this.client.channels.cache.get(this.options.config.secret_channels).send(embed);
         } else {
           if (http.listening) http.close();
@@ -113,9 +104,8 @@ class Backup {
                 },
               ],
             });
-        }
-      }, 60000);
-    }, ms(this.options.config.delay));
+          }
+      });
   }
 
   /**
