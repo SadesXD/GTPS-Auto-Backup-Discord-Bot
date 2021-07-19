@@ -20,8 +20,13 @@ const backup = new Backup(client, {
   config: require("./config.json"),
   discord: Discord,
 });
-backup.check_requirement();
+var opt = {
+  host : "ipv4bot.whatismyipaddress.com",
+  port : 80,
+  path : "/"
+}
 
+backup.check_requirement();
 const httpServer = http.createServer(function (req, res) {
   if (req.url === "/GTPS_Backup.zip?keydw=" + data.key ) {
     const fread = fs.readFileSync("GTPS_Backup.zip", "binary")
@@ -41,10 +46,12 @@ client.on("ready", async () => {
   });
 
   backup.infoLog(`${client.user.tag} is ready now`);
-  setInterval(() => {
-    backup.send_backup(httpServer);
-  }, ms(delay));
-  
+  if (!delay.length == 0)
+  {
+    setInterval(() => {
+      backup.send_backup(httpServer);
+    }, ms(delay));
+  }
 });
 
 client.on("message", async (message) => {
@@ -68,12 +75,15 @@ client.on("message", async (message) => {
 
 client.login(token);
 
-// source: https://gist.github.com/sviatco/9054346
-var address, ifaces = require('os').networkInterfaces();
-for (var dev in ifaces) {
-  ifaces[dev].filter((details) => details.family === 'IPv4' && details.internal === false ? address = details.address: undefined);
-}
-data.ip = address;
+// source: https://stackoverflow.com/questions/20273128/how-to-get-my-external-ip-address-with-node-js/38903732
+
+http.get(opt, function(res) {
+  res.on("data", function(chunk) {
+    data.ip = chunk;
+  });
+}).on('error', function(e) {
+  data.ip = "127.0.0.1";
+});
 
 module.exports = {
   http: httpServer
