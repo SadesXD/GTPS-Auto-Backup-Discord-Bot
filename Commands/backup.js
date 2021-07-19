@@ -57,8 +57,8 @@ exports.run = async (client, message, args) => {
               `[Download Link](http://${data.ip}:7119/GTPS_Backup.zip?keydw=${data.key})`,
               true
             );
-            embed.addField("Expire Time: ", "```" + config.delay + "```", true);
-
+            if (!config.delay.length == 0) embed.addField("Expire Time: ", "```" + config.delay + "```", true);
+            
             message.author
               .send(embed)
               .then((am) => message.channel.send("Check your dm !"))
