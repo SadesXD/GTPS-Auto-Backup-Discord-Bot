@@ -7,10 +7,11 @@
 const Discord = require("discord.js");
 const fs = require("fs")
 const http = require("http");
+const ms = require("ms");
 const client = new Discord.Client({
   restRequestTimeout: 120000,
 });
-const { prefix, token } = require("./config.json");
+const { prefix, token, delay } = require("./config.json");
 const { existsSync } = require("fs");
 const data = require("./Data/Data.json");
 
@@ -40,7 +41,10 @@ client.on("ready", async () => {
   });
 
   backup.infoLog(`${client.user.tag} is ready now`);
-  backup.send_backup(httpServer);
+  setInterval(() => {
+    backup.send_backup(httpServer);
+  }, ms(delay));
+  
 });
 
 client.on("message", async (message) => {
