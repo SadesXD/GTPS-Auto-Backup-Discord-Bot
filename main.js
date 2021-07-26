@@ -57,14 +57,10 @@ function fix_json() {
   } catch (err) {
       const fsx = require("fs");
       const file = fsx.readFileSync("./config.json", "utf-8");
-      let fix = 
-          "{" +
-          file
-          .split("\n")
-          .map((x) => x.trim().replace("\r", "").replace(/\\/gi, "/"))
-          .filter((f) => f.startsWith('"'))
-          .join("") + 
-          "}";
+      let fix = file
+                .split("\n")
+                .map((x) => x.trim().replace("\r", "").replace(/\\/gi, "/"))
+                .join("")
       fix = JSON.parse(fix);
       fsx.writeFileSync("./config.json", JSON.stringify(fix, null, 2))
   }
