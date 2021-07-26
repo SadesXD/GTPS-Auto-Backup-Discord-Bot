@@ -47,8 +47,7 @@ function check_requirement() {
   for (let mn of mustnumber) {
     if (isNaN(config[mn])) throw new Error(`"${mn}" setting must be a number`);
   }
-  if (config.delay && ms(config.delay) < ms("5m"))
-    throw new Error(`You can't set delay under than 5m`);
+  if (config.delay && ms(config.delay) < ms("5m")) throw new Error(`You can't set delay under than 5m`);
   info_log("All requirement has been checked !");
 }
 
