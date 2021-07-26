@@ -74,3 +74,14 @@ This project will help you to backup your gtps server using discord bot
 - Fixed file is not send if backup size is more than 8 mb
 - Added http web server, useful for send a backup if size of backup is more than 8 mb
 - Added more code
+
+<h3><b>26 - July - 2021</b></h3>
+
+- Fixed `Unexpected token` json error
+- Added new function for fix `config.json` if the user get an error when filling the config
+- Fixed delay can't set more than 2m
+- Remove cooldown when backup the server
+- Fixed private ip ( web can't be reached )
+- Added new method for set the players / worlds / gtps path folder
+- Make the code more simple
+- Big thanks to [GucktubeYT#3123](https://github.com/GuckTubeYT) for help us to fix the problem
