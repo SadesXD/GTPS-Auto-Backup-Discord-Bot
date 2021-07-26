@@ -1,90 +1,74 @@
-/**
- * This app is created by SadesXD#3971
- * Helper: GucktubeYT#3123
- * Please give some credit if you're using this app
- */
-
-const Discord = require("discord.js");
-const fs = require("fs")
+const discord = require("discord.js");
+const client = new discord.Client({
+    restRequestTimeout: 120000
+});
+const fs = require("fs");
 const http = require("http");
-const ms = require("ms");
-const client = new Discord.Client({
-  restRequestTimeout: 120000,
-});
-const { prefix, token, delay } = require("./config.json");
-const { existsSync } = require("fs");
-const data = require("./Data/Data.json");
+const ms = require("ms")
+const data = require("./Data/data.json");
+const backup = require("./main.js");
+const config = require("./config.json");
 
-const Backup = require("./main");
-const backup = new Backup(client, {
-  config: require("./config.json"),
-  discord: Discord,
-});
-var opt = {
-  host : "ipv4bot.whatismyipaddress.com",
-  port : 80,
-  path : "/"
-}
+backup.check_requirement()
 
-backup.check_requirement();
 const httpServer = http.createServer(function (req, res) {
-  if (req.url === "/GTPS_Backup.zip?keydw=" + data.key ) {
-    const fread = fs.readFileSync("GTPS_Backup.zip", "binary")
-    res.writeHead(200, {"Content-Type": "application/zip"});
-    res.write(fread, "binary");
-    return res.end();
-  } else {
-    res.writeHead(401, "Auth key needed")
-    res.write("Authentication Key Need");
-    return res.end();
-  }
+    if (req.url === "/GTPS_Backup.zip?keydw=" + data.key ) {
+        const fread = fs.readFileSync("GTPS_Backup.zip", "binary")
+        res.writeHead(200, {"Content-Type": "application/zip"});
+        res.write(fread, "binary");
+        return res.end();
+    } else {
+        res.writeHead(401, "Auth key needed")
+        res.write("Authentication Key Need");
+        return res.end();
+    }
 })
 
-client.on("ready", async () => {
-  client.user.setActivity(`GTPS Auto Backup | ${prefix}help | By SadesXD#3971`, {
-    type: "WATCHING",
-  });
+client.on("ready", () => {
+    client.user.setActivity(`GTPS Auto Backup | ${config.prefix}help | SadesXD#3971`, {
+        type: "WATCHING"
+    });
+    backup.info_log(`${client.user.tag} is ready !`);
 
-  backup.infoLog(`${client.user.tag} is ready now`);
-  if (!delay.length == 0)
-  {
-    setInterval(() => {
-      backup.send_backup(httpServer);
-    }, ms(delay));
-  }
+    if (config.delay) {
+        setInterval(() => {
+            backup.send_backup({ http: httpServer, client });
+        }, ms(config.delay));
+    }
+})
+
+client.on("message", (message) => {
+    if (message.author.bot || 
+        message.channel.type == "dm" ||
+        !message.content.startsWith(config.prefix)) return;
+    
+    let args = message.content.slice(config.prefix.length).trim().split(" ");
+    let command = args.shift().toLowerCase();
+    if (!command) return;
+
+    if (!fs.existsSync(`./Commands/${command}.js`)) return;
+    let commandfile = require(`./Commands/${command}.js`);
+
+    try {
+        commandfile.run(client, message, args);
+    } catch (error) {
+        console.error(error.message);
+    }
 });
 
-client.on("message", async (message) => {
-  if (message.author.bot) return;
-  if (message.channel.type == "dm") return;
-  if (!message.content.startsWith(prefix)) return;
-
-  let args = message.content.slice(prefix.length).trim().split(" ");
-  let command = args.shift().toLowerCase();
-  if (!command) return;
-
-  if (!existsSync(`./Commands/${command}.js`)) return;
-  let commandFile = require(`./Commands/${command}.js`);
-
-  try {
-    commandFile.run(client, message, args);
-  } catch (error) {
-    console.log(error.message);
-  }
-});
-
-client.login(token);
+client.login(config.token);
 
 // source: https://stackoverflow.com/questions/20273128/how-to-get-my-external-ip-address-with-node-js/38903732
-
-http.get(opt, function(res) {
-  res.on("data", function(chunk) {
-    data.ip = chunk;
-  });
+http.get({
+    host : "ipv4bot.whatismyipaddress.com",
+    port : 80,
+    path : "/"
+}, function(res) {
+    res.on("data", function(chunk) {
+        data.ip = chunk;
+    });
 }).on('error', function(e) {
-  data.ip = "127.0.0.1";
+    data.ip = "127.0.0.1";
 });
 
-module.exports = {
-  http: httpServer
-}
+exports.http = httpServer;
