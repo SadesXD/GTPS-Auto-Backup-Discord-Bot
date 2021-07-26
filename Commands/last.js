@@ -1,13 +1,14 @@
 const discord = require("discord.js");
-const Data = require("../Data/Data.json");
+const Data = require("../Data/data.json");
 const moment = require("moment");
 const ms = require("ms");
 
 exports.run = async (client, message, args) => {
-  let get_data = Data.times || Data.time;
+  let get_data = Data.time;
   if (!get_data) {
     return message.channel.send("You don't have a backup of your server !");
   }
+  
   const embed = new discord.MessageEmbed()
     .setAuthor("Last backup time")
     .setColor("RANDOM")
