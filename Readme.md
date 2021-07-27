@@ -84,4 +84,5 @@ This project will help you to backup your gtps server using discord bot
 - Fixed private ip ( web can't be reached )
 - Added new method for set the players / worlds / gtps path folder
 - Make the code more simple
+- Now user can't set delay under than 5m
 - Big thanks to [GucktubeYT#3123](https://github.com/GuckTubeYT) for help us to fix the problem
