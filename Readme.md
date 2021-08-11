@@ -9,7 +9,9 @@
 ## Description
 
 This project will help you to backup your gtps server using discord bot
+## NOTE
 
+Please set firewall 7119 TCP before using this GTPS Auto Backup Discord Bot
 ## Package required
 
 - common-tags
